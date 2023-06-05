@@ -1,0 +1,10 @@
+def solution(price, money, count):
+
+    total = 0
+    for i in range(count):
+        total+=(i+1)*price
+    cal = money-total
+    if cal>=0:
+        return 0
+    else:
+        return cal*-1

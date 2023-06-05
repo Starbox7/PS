@@ -1,0 +1,52 @@
+# deque 패키지 : queue에서 left 삽입, 삭제의 메모리 효율을 위해 만든 패키지 
+from collections import deque 
+def solution(cacheSize, cities):
+    answer = 0
+    buffer = deque()
+
+    # cacheSize가 0인 경우에는 참조하는 값이 없으므로 전부 5를 곱함 
+    if cacheSize == 0: 
+        return len(cities) * 5
+    # 그렇지 않은경우에는, 모든 city에 대해서 확인 
+    # 1. city가 buffer에 있으면 +1, 그렇지 않으면 +5 
+    # 2. city가 buffer에 있으면 삭제하고 가장 먼저 참조된 값으로 변경 `buffer.remove(i) -> buffer.append(i)` 
+        # city가 buffer에 없으면, buffer의 크기와 cacheSize의 크기를 비교 
+        # cacheSize 보다 크기가 크면 가장 오래전 참조된 값을 삭제 `buffer.popleft()`
+        # cacheSize 보다 작으면, 단순 삽입 `buffer.append(i)`
+    else: 
+        for i in cities: 
+            # 대소문자는 구분하지 않으므로 lower으로 변경 
+            i = i.lower()
+            if i in buffer: answer += 1
+            else: answer += 5 
+
+            if i in buffer: 
+                buffer.remove(i)
+            else:
+                if len(buffer) >= cacheSize: 
+                    buffer.popleft()
+
+            buffer.append(i)
+    return answer
+
+
+
+
+풀이
+
+
+LRU가 무엇인지 알면 쉽게푸는 문제
+	LRU : 가장 오랫동안 참조되지 않은 페이지를 교체
+	LFU : 가장 적은 횟수를 참조하는 페이지를 교체
+	FIFO : 가장 먼저 참조되었던 페이지를 교체 (LRU와 다른점은 FIFO의 경우 순서가 바뀌지 않는다는 점)
+	
+LRU 예시) 캐시크기: 2, 도시이름: [Jeju, Pangyo, NewYork, newyork]
+
+Jeju가 들어온 경우, 참조리스트에 아무것도 없으므로 +5를 하고 buffer에 Jeju 삽입
+buffer = ['Jeju'] , answer = 5
+Pangyo가 들어온 경우, 참조리스트에 Jeju가 있으나 Pangyo가 아니므로 +5를 하고 Pangyo를 삽입
+buffer = ['Jeju', 'Pangyo'], answer = 10
+NewYork가 들어온 경우, 참조리스트에 NewYork가 없으므로 +5를 하고 참조리스트가 캐시크기 2보다 크므로 가장 오래전에 참조된 Jeju를 삭제하고 NewYork를 삽입
+buffer = ['Pangyo', 'NewYork'], answer = 15
+newyork가 들어온 경우, 참조리스트에 NewYork가 있으므로 +1를 하고 기존의 NewYork의 우선순위를 가장 높은 순서로 변경(리스트의 맨 마지막, 위의 경우는 이미 가장 높은 참조순위이므로 순서의 변경이 없음)
+buffer = ['Pangyo', 'NewYork'], answer = 16

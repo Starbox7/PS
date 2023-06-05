@@ -1,0 +1,7 @@
+def solution(numbers):
+    answer = 0
+    x = max(numbers)
+    numbers.remove(max(numbers))
+    y = max(numbers)
+
+    return x*y
